@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>farmer Table</title>
+    <style>
+    
+        table {
+            width: 50%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>farmer Table</h2>
+
+    <table>
+        <tr>
+            <th>sl.no</th>
+            <th>farmer name</th>
+            <th>email</th>
+            <th>contact number</th>
+        </tr>
+        {% for i in x %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ i.farmername }}</td>
+            <td>{{ i.email }}</td>
+            <td>{{ i.contactnumber }}</td>
+            <td class="actions">
+                <a href="/app/farmeredit/{{ i.id }}">edit</a> | 
+                <a href="/app/farmerdelete/{{ i.id }}">delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>

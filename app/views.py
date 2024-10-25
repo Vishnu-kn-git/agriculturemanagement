@@ -1,8 +1,8 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.views import View
-from.models import Submit,complaint,feedback
-from .forms import Submitform,complaintform
+from.models import Submit,complaint,feedback,policy,farmer,business
+from .forms import Submitform,complaintform,policyform,farmerform,businessform
 
 class Submitadd(View):
     def get(self,request):
@@ -61,17 +61,129 @@ class complaintedit(View):
         hij=complaintform(request.POST,instance=xyz)
         if hij.is_valid():
             hij.save()
-            return redirect('admin/complaintclass')
+            return redirect('viewcomplaintclass')
         
-class Businesstable(View):
+class Businessproducttable(View):
     def get(self,request):
         xyz=Submit.objects.all()
         return render(request,"business/table.html",{'x':xyz})
 class businesscomplaintclass(View):
     def get(self,request):
-        xyz=complaint.objects.all()
-        return render(request,"business/complaint.html",{'x':xyz})
+        return render(request,"business/registercomplaint.html")
+    def post(self,request):
+        hij=complaintform(request.POST,request.FILES)
+        if hij.is_valid():
+            hij.save()
+            return render(request,"business/registercomplaint.html")
 class registercomplaintclass(View):
     def get(self,request):
         xyz=complaint.objects.all()
-        return render(request,"register_complaint.html",{'x':xyz})
+        return render(request,"business/registercomplaint.html",{'x':xyz})
+class Policyadd(View):
+    def get(self,request):
+        return render(request,"admin/policy.html")
+    def post(self,request):
+        hij=policyform(request.POST,request.FILES)
+        if hij.is_valid():
+            hij.save()
+            return render(request,"admin/policy.html")
+class Policytable(View):
+    def get(self,request):
+        xyz=policy.objects.all()
+        return render(request,"admin/policytable.html",{'x':xyz})
+    
+class Policyedit(View):
+    #edit clicked
+    def get(self,request,pol):
+        xyz=policy.objects.filter(id=pol).first()
+        return render(request,'admin/policyedit.html',{'x':xyz})
+    #update form
+    def post(self,request,pol):
+        xyz=policy.objects.filter(id=pol).first()
+        hij=policyform(request.POST,instance=xyz)
+        if hij.is_valid():
+            hij.save()
+            abc=policy.objects.all()
+            return render(request,"admin/policytable.html",{'x':abc})
+    
+class Policydelete(View):
+    #edit clicked
+    def get(self,request,pol):
+        xyz=policy.objects.filter(id=pol).first()
+        return render(request,'admin/policydelete.html',{'x':xyz})
+    #update form
+    def post(self,request,pol):
+        xyz=policy.objects.filter(id=pol).first()
+        xyz.delete()
+        abc=policy.objects.all()
+        return render(request,"admin/policytable.html",{'x':abc})
+class Farmertable(View):
+    def get(self,request):
+        xyz=farmer.objects.all()
+        return render(request,"admin/farmertable.html",{'x':xyz})
+    
+class Farmeredit(View):
+    #edit clicked
+    def get(self,request,far):
+        xyz=farmer.objects.filter(id=far).first()
+        return render(request,'admin/farmeredit.html',{'x':xyz})
+    #update form
+    def post(self,request,far):
+        xyz=farmer.objects.filter(id=far).first()
+        hij=farmerform(request.POST,instance=xyz)
+        if hij.is_valid():
+            hij.save()
+            abc=farmer.objects.all()
+            return render(request,"admin/farmertable.html",{'x':abc})
+    
+class Farmerdelete(View):
+    #edit clicked
+    def get(self,request,far):
+        xyz=farmer.objects.filter(id=far).first()
+        return render(request,'admin/farmerdelete.html',{'x':xyz})
+    #update form
+    def post(self,request,far):
+        xyz=farmer.objects.filter(id=far).first()
+        xyz.delete()
+        abc=farmer.objects.all()
+        return render(request,"admin/farmertable.html",{'x':abc})
+    
+class Businessadd(View):
+    def get(self,request):
+        return render(request,"business/business.html")
+    def post(self,request):
+        hij=businessform(request.POST,request.FILES)
+        if hij.is_valid():
+            hij.save()
+            return render(request,"business/business.html")
+        
+class Businessregtable(View):
+    def get(self,request):
+        xyz=business.objects.all()
+        return render(request,"business/businessregtable.html",{'x':xyz})
+    
+class Businessedit(View):
+    #edit clicked
+    def get(self,request,bus):
+        xyz=business.objects.filter(id=bus).first()
+        return render(request,'business/businessregedit.html',{'x':xyz})
+    #update form
+    def post(self,request,bus):
+        xyz=business.objects.filter(id=bus).first()
+        hij=businessform(request.POST,instance=xyz)
+        if hij.is_valid():
+            hij.save()
+            abc=business.objects.all()
+            return render(request,"business/businessregtable.html",{'x':abc})
+    
+class Businessdelete(View):
+    #edit clicked
+    def get(self,request,bus):
+        xyz=business.objects.filter(id=bus).first()
+        return render(request,'business/businessregdelete.html',{'x':xyz})
+    #update form
+    def post(self,request,bus):
+        xyz=business.objects.filter(id=bus).first()
+        xyz.delete()
+        abc=business.objects.all()
+        return render(request,"business/businessregtable.html",{'x':abc})
