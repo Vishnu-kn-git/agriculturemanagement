@@ -1,5 +1,5 @@
 from django import forms 
-from .models import Submit,complaint,policy,farmer,business
+from .models import Submit,complaint,policy,farmer,business,requestproduct
 class Submitform(forms.ModelForm):
     class Meta:
             model = Submit
@@ -21,3 +21,8 @@ class businessform(forms.ModelForm):
     class Meta:
         model = business
         fields = ["name","companyname","email","number","password"]
+
+class requestproductform(forms.ModelForm):
+    class Meta:
+        model = requestproduct
+        fields = ["productid","userid","status"]

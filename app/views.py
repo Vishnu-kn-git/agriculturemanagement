@@ -1,8 +1,8 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.views import View
-from.models import Submit,complaint,feedback,policy,farmer,business
-from .forms import Submitform,complaintform,policyform,farmerform,businessform
+from.models import Submit,complaint,feedback,policy,farmer,business,requestproduct
+from .forms import Submitform,complaintform,policyform,farmerform,businessform,requestproductform
 
 class Submitadd(View):
     def get(self,request):
@@ -187,3 +187,44 @@ class Businessdelete(View):
         xyz.delete()
         abc=business.objects.all()
         return render(request,"business/businessregtable.html",{'x':abc})
+    
+class Requestproductadd(View):
+    def get(self,request):
+        return render(request,"business/requestproduct.html")
+    def post(self,request):
+        hij=requestproductform(request.POST,request.FILES)
+        if hij.is_valid():
+            hij.save()
+            return render(request,"business/requestproduct.html")
+        
+
+class Requestproducttable(View):
+    def get(self,request):
+        xyz=requestproduct.objects.all()
+        return render(request,"business/requestproducttable.html",{'x':xyz})
+    
+class Requestproductedit(View):
+    #edit clicked
+    def get(self,request,req):
+        xyz=requestproduct.objects.filter(id=req).first()
+        return render(request,'business/requestproductedit.html',{'x':xyz})
+    #update form
+    def post(self,request,req):
+        xyz=requestproduct.objects.filter(id=req).first()
+        hij=requestproductform(request.POST,instance=xyz)
+        if hij.is_valid():
+            hij.save()
+            abc=requestproduct.objects.all()
+            return render(request,"business/requestproducttable.html",{'x':abc})
+        
+class Requestproductdelete(View):
+    #edit clicked
+    def get(self,request,req):
+        xyz=requestproduct.objects.filter(id=req).first()
+        return render(request,'business/requestproductdelete.html',{'x':xyz})
+    #update form
+    def post(self,request,req):
+        xyz=requestproduct.objects.filter(id=req).first()
+        xyz.delete()
+        abc=requestproduct.objects.all()
+        return render(request,"business/requestproducttable.html",{'x':abc})

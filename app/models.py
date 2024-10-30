@@ -23,3 +23,8 @@ class business(models.Model):
     email=models.CharField(max_length=255,null=True,blank=True)
     number=models.CharField(max_length=255,null=True,blank=True)
     password=models.CharField(max_length=255,null=True,blank=True)
+
+class requestproduct(models.Model):
+    productid=models.CharField(max_length=255,null=True,blank=True)
+    userid=models.CharField(max_length=255,null=True,blank=True)
+    status=models.CharField(max_length=255,null=True,blank=True)
