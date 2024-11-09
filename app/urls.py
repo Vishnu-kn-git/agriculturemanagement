@@ -1,9 +1,9 @@
 from django.urls import path
-from .views import Submitadd,Table,Tabledelete,Tabledit,feedbackclass,complaintclass,complaintedit,Businessproducttable,businesscomplaintclass,Policyadd,Policytable
+from .views import Adminhome, Login, Productadd,Table,Tabledelete,Tabledit,feedbackclass,complaintclass,complaintedit,Businessproducttable,businesscomplaintclass,Policyadd,Policytable
 from .views import Policyedit,Policydelete,Farmertable,Farmerdelete,Farmeredit,Businessadd,Businessregtable
 from .views import Businessedit,Businessdelete,Requestproductadd,Requestproducttable,Requestproductedit,Requestproductdelete
 urlpatterns = [
-    path('submitapp/',Submitadd.as_view()),
+    path('submitapp/',Productadd.as_view()),
     path('table/',Table.as_view()),
     path('tableedit/<vijila>',Tabledit.as_view()),
     path('tabledelete/<vijila>',Tabledelete.as_view()),
@@ -26,6 +26,8 @@ urlpatterns = [
     path('requestproductapp/',Requestproductadd.as_view()),
     path('requestproducttable/',Requestproducttable.as_view()),
     path('requestproductedit/<req>',Requestproductedit.as_view()),
-    path('requestproductdelete/<req>',Requestproductdelete.as_view())
+    path('requestproductdelete/<req>',Requestproductdelete.as_view()),
+    path('adminhome/',Adminhome.as_view(),name='Adminhome'),
+    path('',Login.as_view())
 
 ]

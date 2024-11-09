@@ -1,45 +1,130 @@
+import json
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.views import View
-from.models import Submit,complaint,feedback,policy,farmer,business,requestproduct
-from .forms import Submitform,complaintform,policyform,farmerform,businessform,requestproductform
+from.models import LoginTable, product,complaint,feedback,policy,farmer,business,requestproduct,Token
+from .forms import productform,complaintform,policyform,farmerform,businessform,requestproductform
+from django.contrib.auth import authenticate
+from django.contrib import messages
+class Login(View):
+    def get(self,request):
+        return render(request,"admin/login.html")
+    
+    def post(self, request):
+        user_type = ""
+        response_dict = {"success": False}
+        landing_page_url = {
+            "Admin": "Adminhome",
+            
 
-class Submitadd(View):
+
+
+        }
+        username = request.POST.get("username")
+        print(username, 'username')
+        password = request.POST.get("password")
+        print(password, 'password')
+
+        try:
+
+            user = LoginTable.objects.get(username=username)
+        except LoginTable.DoesNotExist:
+            response_dict[
+                "reason"
+            ] = "no account found for this user name,please sign up."
+            messages.error(request, response_dict["reason"])
+            print(response_dict["reason"])
+            return render(request,'login.html', {"error_message": response_dict.get("reason", "")})
+
+        user = LoginTable.objects.filter(username=username, is_active="False").first()
+        # print("is_activestatus",user.is_active)
+        if user:
+            response_dict[
+                "reason"
+            ] = "user is inactive ,pls contact admin."
+            messages.error(request, response_dict["reason"])
+            print(response_dict["reason"])
+            return render(request,'login.html', {"error_message": response_dict.get("reason", "")})
+        # authenticated = authenticate(email=username, password=password)
+        # try:
+        # print("invalid credentials")
+        # user = Userprofile.objects.filter(email=username,is_active=True,password=password).first()
+        # if user:
+        #     response_dict[
+        #         "reason"
+        #     ]="invalid credentials."
+        #     messages.error(request,response_dict["reason"])
+        #     return render(request, self.templates_name, {"error_message": response_dict.get("reason", "")})
+        user = authenticate(username=username, password=password)
+
+        # user = Userprofile.objects.filter(email=username, is_active="True",password=password).first()
+        print(user, 'auth')
+        if user:
+            session_dict = {"real_user": user.id}
+            token, c = Token.objects.get_or_create(
+                user=user, defaults={"session_dict": json.dumps(session_dict)}
+            )
+
+            user_type = user.user_type
+            request.session["data"] = {
+                "user_id": user.id,
+                "user_type": user.user_type,
+                "token": token.key,
+                "username": user.username,
+                "status": user.is_active,
+            }
+            print(user)
+            print(user_type)
+            request.session["user_id"] = user.id
+            request.session["user"] = user.username
+            request.session["token"] = token.key
+            request.session["status"] = user.is_active
+            return redirect(landing_page_url[user_type])
+        else:
+            response_dict[
+                "reason"
+            ] = "invalid credentials."
+            messages.error(request, response_dict.get("reason", "An unknown error occurred"))
+
+            print(response_dict["reason"])
+            return render(request,'login.html', {"error_message": response_dict.get("reason", "")})
+        return render(request,'Homepage.html', {"error_message": response_dict.get("reason","")})
+class Productadd(View):
     def get(self,request):
         return render(request,"admin/submit.html")
     def post(self,request):
-        hij=Submitform(request.POST,request.FILES)
+        hij=productform(request.POST,request.FILES)
         if hij.is_valid():
             hij.save()
             return render(request,"admin/submit.html")
 class Table(View):
     def get(self,request):
-        xyz=Submit.objects.all()
+        xyz=product.objects.all()
         return render(request,"admin/table.html",{'x':xyz})
 class Tabledit(View):
     #edit clicked
     def get(self,request,vijila):
-        xyz=Submit.objects.filter(id=vijila).first()
+        xyz=product.objects.filter(id=vijila).first()
         return render(request,'admin/tableedit.html',{'x':xyz})
     #update form
     def post(self,request,vijila):
-        xyz=Submit.objects.filter(id=vijila).first()
-        hij=Submitform(request.POST,instance=xyz)
+        xyz=product.objects.filter(id=vijila).first()
+        hij=productform(request.POST,instance=xyz)
         if hij.is_valid():
             hij.save()
-            abc=Submit.objects.all()
+            abc=product.objects.all()
             return render(request,"admin/table.html",{'x':abc})
     
 class Tabledelete(View):
     #edit clicked
     def get(self,request,vijila):
-        xyz=Submit.objects.filter(id=vijila).first()
+        xyz=product.objects.filter(id=vijila).first()
         return render(request,'admin/tabledelete.html',{'x':xyz})
     #update form
     def post(self,request,vijila):
-        xyz=Submit.objects.filter(id=vijila).first()
+        xyz=product.objects.filter(id=vijila).first()
         xyz.delete()
-        abc=Submit.objects.all()
+        abc=product.objects.all()
         return render(request,"admin/table.html",{'x':abc})
 class feedbackclass(View):
     def get(self,request):
@@ -65,7 +150,7 @@ class complaintedit(View):
         
 class Businessproducttable(View):
     def get(self,request):
-        xyz=Submit.objects.all()
+        xyz=product.objects.all()
         return render(request,"business/table.html",{'x':xyz})
 class businesscomplaintclass(View):
     def get(self,request):
@@ -228,3 +313,7 @@ class Requestproductdelete(View):
         xyz.delete()
         abc=requestproduct.objects.all()
         return render(request,"business/requestproducttable.html",{'x':abc})
+    
+class Adminhome(View):
+    def get(self,request):
+        return render(request,"admin/admin-dashboard.html")
